@@ -47,13 +47,12 @@ void checkAndAlert(
     batteryChar.coolingType, temperatureInC
   );
 
-  switch(alertTarget) {
-    case TO_CONTROLLER:
-      sendToController(breachType);
-      break;
-    case TO_EMAIL:
+  if (alertTarget == TO_CONTROLLER){
+        sendToController(breachType);
+  }
+  else
+  {
       sendToEmail(breachType);
-      break;
   }
 }
 
@@ -68,7 +67,7 @@ void sendMailAlert(BreachType breachType){
         printf("To: %s\n", recepient);
         printf("Hi, the temperature is too low\n");
     }
-    else if(breachType == TOO_HIGH)
+    else
     {
         printf("To: %s\n", recepient);
         printf("Hi, the temperature is too high\n");

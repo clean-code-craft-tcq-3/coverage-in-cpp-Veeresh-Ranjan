@@ -18,8 +18,12 @@ TEST_CASE("infers the breach according to limits") {
   batteryChar2.coolingType = MED_ACTIVE_COOLING;
   strcpy(batteryChar2.brand,"Exide");
   checkAndAlert(TO_CONTROLLER, batteryChar2, 41);
+  BatteryCharacter batteryChar3;
+  batteryChar3.coolingType = MED_ACTIVE_COOLING;
+  strcpy(batteryChar3.brand,"Luminous");
+  checkAndAlert(TO_EMAIL, batteryChar3, 41);
   sendToEmail(TOO_HIGH);
-  sendToEmail(TOO_LOW);
+  sendToEmail(NORMAL);
   sendToController(TOO_LOW);
 }
 
