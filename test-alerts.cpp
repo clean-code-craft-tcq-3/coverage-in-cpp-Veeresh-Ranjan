@@ -23,6 +23,7 @@ TEST_CASE("infers the breach according to limits") {
   strcpy(batteryChar3.brand,"Luminous");
   checkAndAlert(TO_EMAIL, batteryChar3, 41);
   sendToEmail(TOO_HIGH);
+  sendToEmail(TOO_LOW);
   sendToEmail(NORMAL);
   sendToController(TOO_LOW);
 }
