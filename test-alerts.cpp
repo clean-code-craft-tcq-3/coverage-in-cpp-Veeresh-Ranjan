@@ -6,6 +6,9 @@
 
 TEST_CASE("infers the breach according to limits") {
   REQUIRE(inferBreach(12, 20, 30) == TOO_LOW);
+  REQUIRE(inferBreach(35, 20, 30) == TOO_HIGH);
+  REQUIRE(inferBreach(10, 10, 30) == NORMAL);
+  REQUIRE(inferBreach(30, 10, 30) == NORMAL);
   REQUIRE(classifyTemperatureBreach(PASSIVE_COOLING, -1) == TOO_LOW);
   BatteryCharacter batteryChar;
   batteryChar.coolingType = HI_ACTIVE_COOLING;
@@ -16,6 +19,7 @@ TEST_CASE("infers the breach according to limits") {
   strcpy(batteryChar2.brand,"Exide");
   checkAndAlert(TO_CONTROLLER, batteryChar2, 41);
   sendToEmail(TOO_HIGH);
+  sendToEmail(TOO_LOW);
   sendToController(TOO_LOW);
 }
 
