@@ -1,5 +1,10 @@
 #include "typewise-alert.h"
 #include <stdio.h>
+bool isPrintMailForTooLow = false, isPrintMailForTooHigh = false, isPrintController = false;
+
+void clearflags(){
+    isPrintMailForTooLow = false, isPrintMailForTooHigh = false, isPrintController = false;
+}
 
 BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
   if(value < lowerLimit) {
@@ -40,13 +45,7 @@ BreachType classifyTemperatureBreach(
   return inferBreach(temperatureInC, lowerLimit, upperLimit);
 }
 
-void checkAndAlert(
-    AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) {
-
-  BreachType breachType = classifyTemperatureBreach(
-    batteryChar.coolingType, temperatureInC
-  );
-
+void sendAlert(AlertTarget alertTarget,BreachType breachType){
   if (alertTarget == TO_CONTROLLER){
         sendToController(breachType);
   }
@@ -56,9 +55,19 @@ void checkAndAlert(
   }
 }
 
+void checkAndAlert(
+    AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) {
+
+  BreachType breachType = classifyTemperatureBreach(
+    batteryChar.coolingType, temperatureInC
+  );
+  sendAlert(alertTarget,breachType);
+}
+
 void sendToController(BreachType breachType) {
   const unsigned short header = 0xfeed;
   printf("%x : %x\n", header, breachType);
+  isPrintController = true;
 }
 
 void sendMailAlert(BreachType breachType){
@@ -66,11 +75,13 @@ void sendMailAlert(BreachType breachType){
     if (breachType == TOO_LOW){
         printf("To: %s\n", recepient);
         printf("Hi, the temperature is too low\n");
+        isPrintMailForTooLow = true;
     }
     else
     {
         printf("To: %s\n", recepient);
         printf("Hi, the temperature is too high\n");
+        isPrintMailForTooHigh = true;
     }
 }
 

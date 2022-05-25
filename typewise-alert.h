@@ -1,6 +1,8 @@
 #pragma once
 #include "type-defines.h"
 
+void clearflags();
+
 BreachType inferBreach(double value, double lowerLimit, double upperLimit);
 BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC);
 

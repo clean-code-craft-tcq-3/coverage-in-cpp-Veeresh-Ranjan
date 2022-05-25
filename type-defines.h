@@ -1,3 +1,7 @@
+#pragma once
+using namespace std;
+
+extern bool isPrintMailForTooLow, isPrintMailForTooHigh, isPrintController;
 
 typedef enum {
   PASSIVE_COOLING,
