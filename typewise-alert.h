@@ -1,32 +1,42 @@
 #pragma once
+#include "type-defines.h"
 
-typedef enum {
-  PASSIVE_COOLING,
-  HI_ACTIVE_COOLING,
-  MED_ACTIVE_COOLING
-} CoolingType;
-
-typedef enum {
-  NORMAL,
-  TOO_LOW,
-  TOO_HIGH
-} BreachType;
+class AlertTheTarget{
+public:
+    AlertTheTarget(){
+    }
+    void virtual sendAlert(BreachType breachType)=0;
+};
+class AlertEmail : public AlertTheTarget{
+    bool isPrintMailForTooLow, isPrintMailForTooHigh;
+public:
+    void sendMailAlert(BreachType breachType);
+    void sendAlert(BreachType breachType);
+    bool getPrintMailForTooHigh(){
+        return isPrintMailForTooHigh;
+    }
+    bool getPrintMailForTooLow(){
+        return isPrintMailForTooLow;
+    }
+    ~AlertEmail(){
+        isPrintMailForTooLow = isPrintMailForTooHigh = 0;
+    }
+};
+class AlertController : public AlertTheTarget{
+    bool isPrintController;
+public:
+    void sendAlert(BreachType breachType);
+    bool getPrintController(){
+        return isPrintController;
+    }
+    ~AlertController(){
+        isPrintController = 0;
+    }
+};
 
 BreachType inferBreach(double value, double lowerLimit, double upperLimit);
 BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC);
 
-typedef enum {
-  TO_CONTROLLER,
-  TO_EMAIL
-} AlertTarget;
-
-typedef struct {
-  CoolingType coolingType;
-  char brand[48];
-} BatteryCharacter;
-
 void checkAndAlert(
-  AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC);
+  AlertTheTarget *alertTarget, BatteryCharacter batteryChar, double temperatureInC);
 
-void sendToController(BreachType breachType);
-void sendToEmail(BreachType breachType);
