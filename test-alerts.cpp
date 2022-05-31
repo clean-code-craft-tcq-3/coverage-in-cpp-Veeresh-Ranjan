@@ -29,38 +29,37 @@ TEST_CASE("infers the breach according to limits") {
   BatteryCharacter batteryChar;
   batteryChar.coolingType = HI_ACTIVE_COOLING;
   strcpy(batteryChar.brand,"Ameron");
-  checkAndAlert(TO_EMAIL, batteryChar, 46);
-  REQUIRE(isPrintMailForTooHigh == true);
+  AlertEmail alertEmailObj;
+  checkAndAlert(&alertEmailObj, batteryChar, 46);
+  REQUIRE(alertEmailObj.getPrintMailForTooHigh() == true);
 
   BatteryCharacter batteryChar2;
   batteryChar2.coolingType = MED_ACTIVE_COOLING;
   strcpy(batteryChar2.brand,"Exide");
-  checkAndAlert(TO_CONTROLLER, batteryChar2, 41);
-  REQUIRE(isPrintController == true);
+  AlertController alertCtrlObj1;
+  checkAndAlert(&alertCtrlObj1, batteryChar2, 41);
+  REQUIRE(alertCtrlObj1.getPrintController() == true);
 
   BatteryCharacter batteryChar3;
   batteryChar3.coolingType = PASSIVE_COOLING;
   strcpy(batteryChar3.brand,"Luminous");
-  checkAndAlert(TO_EMAIL, batteryChar3, -1);
-  REQUIRE(isPrintMailForTooLow == true);
-
-  clearflags();
-  REQUIRE(isPrintMailForTooHigh == false);
-  REQUIRE(isPrintController == false);
-  REQUIRE(isPrintMailForTooLow == false);
+  AlertEmail alertEmailObj2;
+  checkAndAlert(&alertEmailObj2, batteryChar3, -1);
+  REQUIRE(alertEmailObj2.getPrintMailForTooLow() == true);
 
   cout<<"sendToEmail"<<endl;
-  sendToEmail(NORMAL);
-  REQUIRE(isPrintMailForTooHigh == false);
-  REQUIRE(isPrintMailForTooLow == false);
-  sendToEmail(TOO_HIGH);
-  REQUIRE(isPrintMailForTooHigh == true);
-  sendToEmail(TOO_LOW);
-  REQUIRE(isPrintMailForTooLow == true);
+  AlertEmail alertEmailObj3;
+  alertEmailObj3.sendAlert(NORMAL);
+  REQUIRE(alertEmailObj3.getPrintMailForTooHigh() == false);
+  REQUIRE(alertEmailObj3.getPrintMailForTooLow() == false);
+  alertEmailObj3.sendAlert(TOO_HIGH);
+  REQUIRE(alertEmailObj3.getPrintMailForTooHigh() == true);
+  alertEmailObj3.sendAlert(TOO_LOW);
+  REQUIRE(alertEmailObj3.getPrintMailForTooLow() == true);
 
   cout<<"sendToController"<<endl;
-  sendToController(TOO_LOW);
-  REQUIRE(isPrintController == true);
-  clearflags();
+  AlertController alertCtrlObj2;
+  alertCtrlObj2.sendAlert(TOO_LOW);
+  REQUIRE(alertCtrlObj2.getPrintController() == true);
 }
 

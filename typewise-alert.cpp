@@ -1,10 +1,5 @@
 #include "typewise-alert.h"
 #include <stdio.h>
-bool isPrintMailForTooLow = false, isPrintMailForTooHigh = false, isPrintController = false;
-
-void clearflags(){
-    isPrintMailForTooLow = false, isPrintMailForTooHigh = false, isPrintController = false;
-}
 
 BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
   if(value < lowerLimit) {
@@ -44,33 +39,7 @@ BreachType classifyTemperatureBreach(
   getThresholds(coolingType,lowerLimit,upperLimit);
   return inferBreach(temperatureInC, lowerLimit, upperLimit);
 }
-
-void sendAlert(AlertTarget alertTarget,BreachType breachType){
-  if (alertTarget == TO_CONTROLLER){
-        sendToController(breachType);
-  }
-  else
-  {
-      sendToEmail(breachType);
-  }
-}
-
-void checkAndAlert(
-    AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) {
-
-  BreachType breachType = classifyTemperatureBreach(
-    batteryChar.coolingType, temperatureInC
-  );
-  sendAlert(alertTarget,breachType);
-}
-
-void sendToController(BreachType breachType) {
-  const unsigned short header = 0xfeed;
-  printf("%x : %x\n", header, breachType);
-  isPrintController = true;
-}
-
-void sendMailAlert(BreachType breachType){
+void AlertEmail::sendMailAlert(BreachType breachType){
     const char* recepient = "a.b@c.com";
     if (breachType == TOO_LOW){
         printf("To: %s\n", recepient);
@@ -85,9 +54,23 @@ void sendMailAlert(BreachType breachType){
     }
 }
 
-void sendToEmail(BreachType breachType) {
+void AlertEmail::sendAlert(BreachType breachType) {
   if (!breachType == NORMAL){
     sendMailAlert(breachType);
   }
 }
 
+void AlertController::sendAlert(BreachType breachType) {
+  const unsigned short header = 0xfeed;
+  printf("%x : %x\n", header, breachType);
+  isPrintController = true;
+}
+
+void checkAndAlert(
+    AlertTheTarget *alertTarget, BatteryCharacter batteryChar, double temperatureInC) {
+
+  BreachType breachType = classifyTemperatureBreach(
+    batteryChar.coolingType, temperatureInC
+  );
+  alertTarget->sendAlert(breachType);
+}
